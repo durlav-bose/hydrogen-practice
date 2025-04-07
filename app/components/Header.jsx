@@ -1,4 +1,4 @@
-import {Suspense} from 'react';
+import {Suspense, useEffect, useState} from 'react';
 import {Await, NavLink, useAsyncValue} from '@remix-run/react';
 import {useAnalytics, useOptimisticCart} from '@shopify/hydrogen';
 import {useAside} from '~/components/Aside';
@@ -8,19 +8,71 @@ import {useAside} from '~/components/Aside';
  */
 export function Header({header, isLoggedIn, cart, publicStoreDomain}) {
   const {shop, menu} = header;
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isScrollingUp, setIsScrollingUp] = useState(false);
+  const [lastScrollTop, setLastScrollTop] = useState(0);
+
+  const {type: asideType} = useAside();
+
+  useEffect(() => {
+    const root = document.documentElement;
+    root.style.setProperty('--header-height', isScrolled ? '64px' : '84px');
+    root.style.setProperty('--annoucement-height', isScrolled ? '0' : '48px');
+
+    const handleScroll = () => {
+      if (asideType !== 'closed') return;
+
+      const currentScrollTop = window.scrollY;
+
+      setIsScrolled(currentScrollTop > 50);
+      setIsScrollingUp(lastScrollTop > currentScrollTop);
+      setLastScrollTop(currentScrollTop);
+    };
+
+    window.addEventListener('scroll', handleScroll, {passive: true});
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [lastScrollTop, isScrolled, isScrollingUp]);
+
   return (
-    <header className="header">
-      <NavLink prefetch="intent" to="/" style={activeLinkStyle} end>
-        <strong>{shop.name}</strong>
-      </NavLink>
-      <HeaderMenu
-        menu={menu}
-        viewport="desktop"
-        primaryDomainUrl={header.shop.primaryDomain.url}
-        publicStoreDomain={publicStoreDomain}
-      />
-      <HeaderCtas isLoggedIn={isLoggedIn} cart={cart} />
-    </header>
+    <div
+      className={`fixed z-40 w-full transition-all duration-300 ease-in-out 
+      ${
+        !isScrollingUp && isScrolled && asideType === 'closed'
+          ? '-translate-y-full'
+          : 'translate-y-0'
+      }`}
+    >
+      <div
+        className={`bg-zinc-800 text-white flex justify-center items-center overflow-hidden ${
+          isScrolled ? 'max-h-0' : 'max-h-12'
+        }`}
+      >
+        <div>
+          <p className="py-1.5 ">This is announcement bar</p>
+        </div>
+      </div>
+
+      <header
+        className={`bg-white text-black transition-all duration-300 ease-in-out border-b px-4 py-2 ${
+          isScrolled ? 'border-transparent bg-white/80 backdrop-blur-lg' : 'bg-white border-gray-200'}`}
+      >
+        <NavLink prefetch="intent" to="/" style={activeLinkStyle} end>
+          <strong>{shop.name}</strong>
+        </NavLink>
+      </header>
+    </div>
+    // <header className="header">
+    //   <NavLink prefetch="intent" to="/" style={activeLinkStyle} end>
+    //     <strong>{shop.name}</strong>
+    //   </NavLink>
+    //   <HeaderMenu
+    //     menu={menu}
+    //     viewport="desktop"
+    //     primaryDomainUrl={header.shop.primaryDomain.url}
+    //     publicStoreDomain={publicStoreDomain}
+    //   />
+    //   <HeaderCtas isLoggedIn={isLoggedIn} cart={cart} />
+    // </header>
   );
 }
 

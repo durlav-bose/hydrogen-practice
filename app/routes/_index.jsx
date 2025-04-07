@@ -100,7 +100,7 @@ function FeaturedCollection({collection}) {
 function RecommendedProducts({products}) {
   return (
     <div className="recommended-products">
-      <h2>Recommended Products</h2>
+      <h2 className='text-xl font-bold'>Recommended Products</h2>
       <Suspense fallback={<div>Loading...</div>}>
         <Await resolve={products}>
           {(response) => (
