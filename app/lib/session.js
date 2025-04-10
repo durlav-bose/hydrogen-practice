@@ -1,13 +1,9 @@
 import { createCookieSessionStorage } from '@shopify/remix-oxygen';
 
-/**
- * This is a custom session implementation for your Hydrogen shop.
- * Feel free to customize it to your needs, add helper methods, or
- * swap out the cookie-based implementation with something else!
- */
 export class AppSession {
   #sessionStorage;
   #session;
+  #isPending;
 
   /**
    * @param {SessionStorage} sessionStorage
@@ -16,6 +12,7 @@ export class AppSession {
   constructor(sessionStorage, session) {
     this.#sessionStorage = sessionStorage;
     this.#session = session;
+    this.#isPending = false;
   }
 
   /**
@@ -31,6 +28,8 @@ export class AppSession {
         path: '/',
         sameSite: 'lax',
         secrets,
+        secure: process.env.NODE_ENV === 'production', // Only secure in production
+        maxAge: 60 * 60 * 24 * 30, // 30 days
       },
     });
 
@@ -39,6 +38,10 @@ export class AppSession {
       .catch(() => storage.getSession());
 
     return new this(storage, session);
+  }
+
+  get isPending() {
+    return this.#isPending;
   }
 
   get has() {
@@ -50,26 +53,27 @@ export class AppSession {
   }
 
   get flash() {
+    this.#isPending = true;
     return this.#session.flash;
   }
 
   get unset() {
+    this.#isPending = true;
     return this.#session.unset;
   }
 
   get set() {
+    this.#isPending = true;
     return this.#session.set;
   }
 
   destroy() {
+    this.#isPending = false;
     return this.#sessionStorage.destroySession(this.#session);
   }
 
   commit() {
+    this.#isPending = false;
     return this.#sessionStorage.commitSession(this.#session);
   }
 }
-
-/** @typedef {import('@shopify/hydrogen').HydrogenSession} HydrogenSession */
-/** @typedef {import('@shopify/remix-oxygen').SessionStorage} SessionStorage */
-/** @typedef {import('@shopify/remix-oxygen').Session} Session */

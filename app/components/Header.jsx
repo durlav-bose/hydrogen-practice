@@ -34,7 +34,7 @@ export function Header({header, isLoggedIn, cart, publicStoreDomain}) {
   }, [lastScrollTop, isScrolled, isScrollingUp]);
 
   return (
-    <div
+    <header
       className={`fixed z-40 w-full transition-all duration-300 ease-in-out 
       ${
         !isScrollingUp && isScrolled && asideType === 'closed'
@@ -85,7 +85,7 @@ export function Header({header, isLoggedIn, cart, publicStoreDomain}) {
           <HeaderCtas isLoggedIn={isLoggedIn} cart={cart} />
         </div>
       </div>
-    </div>
+    </header>
     // <header className="header">
     //   <NavLink prefetch="intent" to="/" style={activeLinkStyle} end>
     //     <strong>{shop.name}</strong>

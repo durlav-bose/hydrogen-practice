@@ -1,89 +1,43 @@
-import {data as remixData} from '@shopify/remix-oxygen';
-import {Form, NavLink, Outlet, useLoaderData} from '@remix-run/react';
-import {CUSTOMER_DETAILS_QUERY} from '~/graphql/customer-account/CustomerDetailsQuery';
+import {Form, useLoaderData} from '@remix-run/react';
+import {json} from '@shopify/remix-oxygen';
 
-export function shouldRevalidate() {
-  return true;
-}
-
-/**
- * @param {LoaderFunctionArgs}
- */
 export async function loader({context}) {
-  const {data, errors} = await context.customerAccount.query(
-    CUSTOMER_DETAILS_QUERY,
-  );
+  const {data, errors} = await context.customerAccount.query(`#graphql
+      query getCustomer {
+        customer {
+          firstName
+          lastName
+        }
+      }
+      `);
 
   if (errors?.length || !data?.customer) {
     throw new Error('Customer not found');
   }
 
-  return remixData(
+  return json(
     {customer: data.customer},
     {
       headers: {
         'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Set-Cookie': await context.session.commit(),
       },
     },
   );
 }
 
-export default function AccountLayout() {
-  /** @type {LoaderReturnData} */
+export default function () {
   const {customer} = useLoaderData();
+  console.log('customer', customer);
 
-  const heading = customer
-    ? customer.firstName
-      ? `Welcome, ${customer.firstName}`
-      : `Welcome to your account.`
-    : 'Account Details';
-
-  return (
-    <div className="account">
-      <h1>{heading}</h1>
-      <br />
-      <AccountMenu />
-      <br />
-      <br />
-      <Outlet context={{customer}} />
-    </div>
-  );
+  return customer ? (
+    <>
+      <b>
+        Welcome  {customer.firstName} {customer.lastName}
+      </b>
+      <Form method="post" action="/logout">
+        <button>Logout</button>
+      </Form>
+    </>
+  ) :  null;
 }
-
-function AccountMenu() {
-  function isActiveStyle({isActive, isPending}) {
-    return {
-      fontWeight: isActive ? 'bold' : undefined,
-      color: isPending ? 'grey' : 'black',
-    };
-  }
-
-  return (
-    <nav role="navigation">
-      <NavLink to="/account/orders" style={isActiveStyle}>
-        Orders &nbsp;
-      </NavLink>
-      &nbsp;|&nbsp;
-      <NavLink to="/account/profile" style={isActiveStyle}>
-        &nbsp; Profile &nbsp;
-      </NavLink>
-      &nbsp;|&nbsp;
-      <NavLink to="/account/addresses" style={isActiveStyle}>
-        &nbsp; Addresses &nbsp;
-      </NavLink>
-      &nbsp;|&nbsp;
-      <Logout />
-    </nav>
-  );
-}
-
-function Logout() {
-  return (
-    <Form className="account-logout" method="POST" action="/account/logout">
-      &nbsp;<button type="submit">Sign out</button>
-    </Form>
-  );
-}
-
-/** @typedef {import('@shopify/remix-oxygen').LoaderFunctionArgs} LoaderFunctionArgs */
-/** @typedef {import('@shopify/remix-oxygen').SerializeFrom<typeof loader>} LoaderReturnData */

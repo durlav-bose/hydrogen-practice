@@ -63,13 +63,10 @@ export function links() {
  * @param {LoaderFunctionArgs} args
  */
 export async function loader(args) {
-  // Start fetching non-critical data without blocking time to first byte
   const deferredData = loadDeferredData(args);
-
-  // Await the critical data required to render initial state of the page
   const criticalData = await loadCriticalData(args);
 
-  const {storefront, env} = args.context;
+  const {storefront, env, session} = args.context;
 
   return {
     ...deferredData,
@@ -83,12 +80,15 @@ export async function loader(args) {
       checkoutDomain: env.PUBLIC_CHECKOUT_DOMAIN,
       storefrontAccessToken: env.PUBLIC_STOREFRONT_API_TOKEN,
       withPrivacyBanner: false,
-      // localize the privacy banner
-      country: args.context.storefront.i18n.country,
-      language: args.context.storefront.i18n.language,
+      country: storefront.i18n.country,
+      language: storefront.i18n.language,
     },
+    // headers: {
+    //   'Set-Cookie': await session.commit(),
+    // },
   };
 }
+
 
 /**
  * Load data necessary for rendering content above the fold. This is the critical data
