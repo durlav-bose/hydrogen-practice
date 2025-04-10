@@ -39,7 +39,11 @@ export default defineConfig({
        * Include 'example-dep' in the array below.
        * @see https://vitejs.dev/config/dep-optimization-options
        */
-      include: [],
+      include: ['@remix-run/dev/server-build'],
     },
   },
+  server: {
+    allowedHosts: ['1513-103-197-153-13.ngrok-free.app'], // 👈 Add this line
+  },
+ 
 });

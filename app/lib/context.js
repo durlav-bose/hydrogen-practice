@@ -34,6 +34,9 @@ export async function createAppLoadContext(request, env, executionContext) {
     cart: {
       queryFragment: CART_QUERY_FRAGMENT,
     },
+    customerAccount: {
+      unstableB2b: true,
+    },
   });
 
   return {

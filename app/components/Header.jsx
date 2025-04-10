@@ -52,14 +52,39 @@ export function Header({header, isLoggedIn, cart, publicStoreDomain}) {
         </div>
       </div>
 
-      <header
-        className={`bg-white text-black transition-all duration-300 ease-in-out border-b px-4 py-2 ${
-          isScrolled ? 'border-transparent bg-white/80 backdrop-blur-lg' : 'bg-white border-gray-200'}`}
+      <div
+        className={`bg-white text-black transition-all duration-300 ease-in-out border-b px-4 py-2 lg:hidden ${
+          isScrolled
+            ? 'border-transparent bg-white/80 backdrop-blur-lg'
+            : 'bg-white border-gray-200'
+        }`}
       >
         <NavLink prefetch="intent" to="/" style={activeLinkStyle} end>
           <strong>{shop.name}</strong>
         </NavLink>
-      </header>
+      </div>
+      <div className="flex justify-between items-center px-4 py-2 bg-white border-b">
+        <div className="lg:hidden">
+          <HeaderMenuMobileToggle />
+        </div>
+        <div className='hidden lg:block'>
+        <NavLink prefetch="intent" to="/" style={activeLinkStyle} end>
+          <strong>{shop.name}</strong>
+        </NavLink>
+        </div>
+
+        <div>
+          <HeaderMenu
+            menu={menu}
+            viewport="desktop"
+            primaryDomainUrl={header.shop.primaryDomain.url}
+            publicStoreDomain={publicStoreDomain}
+          />
+        </div>
+        <div>
+          <HeaderCtas isLoggedIn={isLoggedIn} cart={cart} />
+        </div>
+      </div>
     </div>
     // <header className="header">
     //   <NavLink prefetch="intent" to="/" style={activeLinkStyle} end>
@@ -140,7 +165,7 @@ export function HeaderMenu({
 function HeaderCtas({isLoggedIn, cart}) {
   return (
     <nav className="header-ctas" role="navigation">
-      <HeaderMenuMobileToggle />
+      {/* <HeaderMenuMobileToggle /> */}
       <NavLink prefetch="intent" to="/account" style={activeLinkStyle}>
         <Suspense fallback="Sign in">
           <Await resolve={isLoggedIn} errorElement="Sign in">
