@@ -20,6 +20,8 @@ export const ORDER_ITEM_FRAGMENT = `#graphql
 // https://shopify.dev/docs/api/customer/latest/objects/Customer
 export const CUSTOMER_ORDERS_FRAGMENT = `#graphql
   fragment CustomerOrders on Customer {
+    firstName
+    lastName
     orders(
       sortKey: PROCESSED_AT,
       reverse: true,

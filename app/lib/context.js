@@ -36,6 +36,7 @@ export async function createAppLoadContext(request, env, executionContext) {
     },
     customerAccount: {
       unstableB2b: true,
+      
     },
   });
 

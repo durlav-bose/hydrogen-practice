@@ -43,7 +43,7 @@ export default defineConfig({
     },
   },
   server: {
-    allowedHosts: ['bc7d-103-197-153-13.ngrok-free.app'], // 👈 Add this line
+    allowedHosts: ['2f65-103-197-153-13.ngrok-free.app'], // 👈 Add this line
   },
  
 });

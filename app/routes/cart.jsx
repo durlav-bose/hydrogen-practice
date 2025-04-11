@@ -19,7 +19,8 @@ export const headers = ({actionHeaders}) => actionHeaders;
  * @param {ActionFunctionArgs}
  */
 export async function action({request, context}) {
-  const {cart} = context;
+  const {cart, customerAccount} = context;
+  const buyer = await customerAccount.UNSTABLE_getBuyer();
 
   const formData = await request.formData();
 
@@ -69,6 +70,7 @@ export async function action({request, context}) {
     case CartForm.ACTIONS.BuyerIdentityUpdate: {
       result = await cart.updateBuyerIdentity({
         ...inputs.buyerIdentity,
+        customerAccessToken: buyer.customerAccessToken,
       });
       break;
     }

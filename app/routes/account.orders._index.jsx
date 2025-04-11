@@ -7,6 +7,7 @@ import {
 import {CUSTOMER_ORDERS_QUERY} from '~/graphql/customer-account/CustomerOrdersQuery';
 import {PaginatedResourceSection} from '~/components/PaginatedResourceSection';
 
+
 /**
  * @type {MetaFunction}
  */
@@ -41,9 +42,11 @@ export async function loader({request, context}) {
 export default function Orders() {
   /** @type {LoaderReturnData} */
   const {customer} = useLoaderData();
+
   const {orders} = customer;
   return (
     <div className="orders">
+     
       {orders.nodes.length ? <OrdersTable orders={orders} /> : <EmptyOrders />}
     </div>
   );
