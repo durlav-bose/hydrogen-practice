@@ -106,7 +106,11 @@ export default function Product() {
   return (
     <div className="product">
       {/* <ProductImage image={selectedVariant?.image} /> */}
-      <ProductImage images={product.images.nodes} />
+      <ProductImage
+        images={product.images.nodes}
+        variants={product.variants.nodes}
+        selectedVariant={selectedVariant}
+      />
 
       <div className="product-main">
         <h1>{title}</h1>
@@ -212,6 +216,11 @@ const PRODUCT_FRAGMENT = `#graphql
             }
           }
         }
+      }
+    }
+    variants(first: 100) {
+      nodes {
+        ...ProductVariant
       }
     }
     images(first: 10) {
