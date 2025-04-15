@@ -99,7 +99,9 @@ export default function Product() {
     selectedOrFirstAvailableVariant: selectedVariant,
   });
 
-  const {title, descriptionHtml} = product;
+  const {title, descriptionHtml, metafield} = product;
+
+  const category = metafield?.value || 'Uncategorized';
 
   return (
     <div className="product">
@@ -122,6 +124,9 @@ export default function Product() {
         </p>
         <br />
         <div dangerouslySetInnerHTML={{__html: descriptionHtml}} />
+        <br />
+        {/* this is from metafield */}
+        <div>Category: {category}</div>
         <br />
       </div>
       <Analytics.ProductView
@@ -212,6 +217,11 @@ const PRODUCT_FRAGMENT = `#graphql
     }
     adjacentVariants (selectedOptions: $selectedOptions) {
       ...ProductVariant
+    }
+     metafield(namespace: "custom", key: "category") {
+      id
+      value
+      type
     }
     seo {
       description
