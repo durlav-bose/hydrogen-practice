@@ -105,7 +105,9 @@ export default function Product() {
 
   return (
     <div className="product">
-      <ProductImage image={selectedVariant?.image} />
+      {/* <ProductImage image={selectedVariant?.image} /> */}
+      <ProductImage images={product.images.nodes} />
+
       <div className="product-main">
         <h1>{title}</h1>
         <ProductPrice
@@ -210,6 +212,15 @@ const PRODUCT_FRAGMENT = `#graphql
             }
           }
         }
+      }
+    }
+    images(first: 10) {
+      nodes {
+        id
+        url
+        altText
+        width
+        height
       }
     }
     selectedOrFirstAvailableVariant(selectedOptions: $selectedOptions, ignoreUnknownOptions: true, caseInsensitiveMatch: true) {
